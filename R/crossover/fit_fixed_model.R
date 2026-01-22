@@ -1,9 +1,18 @@
-model <- lm(logpk ~ treatment + sequence + period + subject:sequence, data = data)
-fit <- emmeans(model, ~ treatment, level = 0.9)
-diff <- contrast(fit, method = "revpairwise")
-
-smry <- list(
-  emmeans_summary  = summary(fit),
-  contrast_summary = summary(diff, infer = TRUE),
-  sigma            = summary(model)[["sigma"]]
-)
+# Define fixed-effects model function
+fit_fixed <- function(data) {
+  
+  # Fit the fixed-effects model
+  model <- lm(logPK ~ Sequence + Subject:Sequence + Period + Treatment, data = data)
+  
+  # Estimated marginal means and contrasts
+  fit <- emmeans(model, ~ Treatment, level = 0.9)
+  diff <- contrast(fit, method = "revpairwise")
+  
+  # Return results as a list
+  smry <- list(
+    emmeans_summary  = summary(fit),
+    contrast_summary = summary(diff, infer = TRUE),
+    sigma            = summary(model)[["sigma"]]
+  )
+  return(smry)
+}
