@@ -15,9 +15,15 @@
 # Author: Bianca Gasparini
 ###############################################################################
 
+#Simulation
 source("data/parallel_group/simulate_parallel.R")
 
 res <- simulate_parallel()
 
 saveRDS(res, "data/parallel_group/example/sim_pg.rds")
 write.csv(res, "data/parallel_group/example/sim_pg.csv", row.names = FALSE)
+
+# Validation
+source("data/parallel_group/validate_parallel.R")
+
+validate_all_pg(res)
