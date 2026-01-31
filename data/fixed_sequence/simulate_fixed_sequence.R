@@ -1,43 +1,51 @@
 ###############################################################################
-# File: simulate_crossover.R
+# File: simulate_fixed_sequence.R
 #
 # Purpose:
-#   Defines a function to simulate PK data for a 2x2 crossover Phase 1 study
+#   Defines a function to simulate PK data for a fixed-sequence Phase 1 study
 #   under log-normal assumptions with between- and within-subject variability.
-#
-# Contents:
-#   - simulate_crossover(): returns balanced and unbalanced datasets.
-#
-# Used by:
-#   - quarto/crossover_case_study.qmd
-#   - data/run_simulation.R
-#
-# Outputs:
-#   None directly; datasets returned as R objects.
 #
 # Author: Bianca Gasparini
 ###############################################################################
 
-simulate_crossover <- function(
-    n_subjects = 16,
-    seed = 646997,
+library(dplyr)
+library(tidyr)
+
+#' Simulate fixed-sequence PK study
+#'
+#' Generates log-PK data for multiple PK parameters under a
+#' fixed-sequence design with between- and within-subject variability.
+#'
+#' @param n_subjects Number of subjects.
+#' @param seed Random seed.
+#' @param sequence Character vector giving treatment order (e.g. c("R","T")).
+#' @param drop_subjects Subjects to drop in unbalanced version.
+#' @param drop_period Period removed.
+#'
+#' @return A list with:
+#'   \describe{
+#'     \item{balanced}{Balanced dataset}
+#'     \item{unbalanced}{Unbalanced dataset}
+#'   }
+#'
+#' @examples
+#' sim <- simulate_fixed_sequence()
+
+simulate_fixed_sequence <- function(
+    n_subjects   = 16,
+    seed         = 646997,
+    sequence     = c("R", "T"),
     drop_subjects = c(5, 6),
-    drop_period = 2
+    drop_period   = 2
 ) {
   
   set.seed(seed)
   
-  # ---- Subjects & sequences ----
-  subjects  <- seq_len(n_subjects)
-  sequences <- sample(rep(c("TR", "RT"), length.out = n_subjects))
-  
-  treatments_seq <- list(
-    TR = c("T", "R"),
-    RT = c("R", "T")
-  )
+  # ---- Subjects ----
+  subjects <- seq_len(n_subjects)
   
   # ---- Mean (log-scale) parameters ----
-  mu_table <- tibble::tribble(
+  mu_table <- tribble(
     ~Treatment, ~Parameter,       ~mu,
     "T",        "AUC0_tz",        6.146901,
     "T",        "AUCINF_pred",    6.173306,
@@ -48,7 +56,7 @@ simulate_crossover <- function(
   )
   
   # ---- Variance components ----
-  var_components <- tibble::tribble(
+  var_components <- tribble(
     ~Parameter,       ~between_sd, ~within_sd,
     "AUC0_tz",             0.3100274, 0.1033928,
     "AUCINF_pred",         0.3078800, 0.1015943,
@@ -61,16 +69,14 @@ simulate_crossover <- function(
   
   param_levels <- unique(log_params$Parameter)
   
-  # ---- Crossover design ----
+  # ---- Fixed-sequence design ----
   design <- tibble(
     Subject  = factor(subjects),
-    Sequence = factor(sequences)
+    Sequence = factor(paste(sequence, collapse = ""))
   ) %>%
-    mutate(sequence = map(Sequence, ~ treatments_seq[[.x]])) %>%
-    unnest_longer(sequence,
-                  values_to  = "Treatment",
-                  indices_to = "Period") %>%
+    uncount(length(sequence), .id = "Period") %>%
     mutate(
+      Treatment = sequence[Period],
       Period    = factor(Period),
       Treatment = factor(Treatment)
     )
@@ -81,31 +87,33 @@ simulate_crossover <- function(
     Parameter = param_levels
   ) %>%
     left_join(var_components, by = "Parameter") %>%
-    mutate(subject_re = rnorm(n(), mean = 0, sd = between_sd)) %>%
+    mutate(subject_re = rnorm(n(), 0, between_sd)) %>%
     select(Subject, Parameter, subject_re)
   
   # ---- Simulate PK ----
   sim_data <- design %>%
     crossing(Parameter = param_levels) %>%
     left_join(log_params,
-              by = c("Treatment", "Parameter")) %>%
+                     by = c("Treatment", "Parameter")) %>%
     left_join(subject_effects,
-              by = c("Subject", "Parameter")) %>%
+                     by = c("Subject", "Parameter")) %>%
     mutate(
-      residual = rnorm(n(), mean = 0, sd = within_sd),
+      residual = rnorm(n(), 0, within_sd),
       logPK    = mu + subject_re + residual,
       PK       = exp(logPK),
       Treatment = relevel(factor(Treatment), ref = "R")
     ) %>%
-    select(Subject, Sequence, Period,
-           Treatment, Parameter,
-           logPK, PK) %>%
+    select(
+      Subject, Sequence, Period,
+      Treatment, Parameter,
+      logPK, PK
+    ) %>%
     arrange(Parameter, Subject, Period)
   
   # ---- Unbalanced version ----
   sim_data_un <- sim_data %>%
     filter(!(Subject %in% drop_subjects &
-               Period  == drop_period))
+                      Period == drop_period))
   
   # ---- Return ----
   list(
