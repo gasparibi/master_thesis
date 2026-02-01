@@ -70,7 +70,7 @@ simulate_parallel <- function(
   # ---- Design ----
   design <- tibble(
     Subject   = factor(subjects),
-    Treatment = factor(treatments)
+    Treatment = factor(treatments, levels = c("R", "T"))
   )
   
   # ---- Simulate PK ----
@@ -81,8 +81,7 @@ simulate_parallel <- function(
     mutate(
       residual = rnorm(n(), 0, sd),
       logPK    = mu + residual,
-      PK       = exp(logPK),
-      Treatment = relevel(factor(Treatment), ref = "R")
+      PK       = exp(logPK)
     ) %>%
     select(
       Subject,
