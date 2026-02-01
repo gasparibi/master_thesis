@@ -3,8 +3,8 @@ Program:      run_crossover.sas
 Purpose:      Implementation of relative bioavailability analysis for a 2x2 crossover design using PROC MIXED.
               Comparison of fixed-effects vs. mixed-effects approaches with both balanced and unbalanced datasets.
 Author:       Bianca Gasparini
-Input:        - &root/sim_data.csv (balanced 2x2 crossover dataset)
-              - &root/sim_data_un.csv (unbalanced 2x2 crossover dataset)
+Input:        - &root/sim_cr.csv (balanced 2x2 crossover dataset)
+              - &root/sim_cr_un.csv (unbalanced 2x2 crossover dataset)
 Output:       - results.table_[model]_[dataset] 
               - Regulatory-style summary tables 
 ******************************************************************************************************************/
@@ -16,15 +16,15 @@ libname results "&root/results";
 
 /* IMPORT DATASETS */
 
-proc import datafile="&root/sim_data.csv" 
-    out=results.sim_data
+proc import datafile="&root/sim_cr.csv" 
+    out=results.sim_cr
     dbms=csv
     replace;
     guessingrows=max;
 run;
 
-proc import datafile="&root/sim_data_un.csv"
-    out=results.sim_data_un
+proc import datafile="&root/sim_cr_un.csv"
+    out=results.sim_cr_un
     dbms=csv
     replace;
     guessingrows=max;
@@ -64,11 +64,11 @@ ods exclude none;
 
 %macro run_all;
 
-%run_mixed(indata=results.sim_data,    outprefix=fe_bal,   random=0);
-%run_mixed(indata=results.sim_data_un, outprefix=fe_unbal, random=0);
+%run_mixed(indata=results.sim_cr,    outprefix=fe_bal,   random=0);
+%run_mixed(indata=results.sim_cr_un, outprefix=fe_unbal, random=0);
 
-%run_mixed(indata=results.sim_data,    outprefix=me_bal,   random=1);
-%run_mixed(indata=results.sim_data_un, outprefix=me_unbal, random=1);
+%run_mixed(indata=results.sim_cr,    outprefix=me_bal,   random=1);
+%run_mixed(indata=results.sim_cr_un, outprefix=me_unbal, random=1);
 
 %mend;
 
@@ -89,8 +89,8 @@ quit;
 
 %mend;
 
-%count_n(indata=results.sim_data,    out=n_bal);
-%count_n(indata=results.sim_data_un, out=n_unbal);
+%count_n(indata=results.sim_cr,    out=n_bal);
+%count_n(indata=results.sim_cr_un, out=n_unbal);
 
 /* ASSEMBLE THE TABLE */
 %macro assemble(prefix=, ndata=, out=);
@@ -156,7 +156,7 @@ proc report data=&data nowd headline split="|";
            adj_gmean adj_gse
            ratio gse lower upper gcv;
 
-    define group / group "Endpoint";
+    define group / order "Endpoint";
     define parameter / group "PK Parameter";
 
     define treatment / display;

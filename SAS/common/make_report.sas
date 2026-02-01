@@ -21,7 +21,7 @@ proc report data=&data nowd headline split="|";
            adj_gmean adj_gse
            ratio gse lower upper gcv;
 
-    define group / group "Endpoint";
+    define group / order "Endpoint";
     define parameter / group "PK Parameter";
 
     define treatment / display;
