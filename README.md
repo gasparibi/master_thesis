@@ -42,10 +42,12 @@ master_thesis/
 ├── output/                        # Quarto report and saved images
 │   └── crossover/
 │
-├── renv/                          # R package environment (auto-generated)
+├── .Rprofile                      # Activates renv environment automatically
 ├── renv.lock                      # Locked package versions for reproducibility
-├── .Rproj
-└── README.md
+├── master_thesis.Rproj
+├── README.md
+├── LICENSE
+└── .gitignore
 ```
 
 The repository is organized so that simulation code, R pipelines, and SAS programs mirror each other across study designs, facilitating direct cross-platform comparisons.
