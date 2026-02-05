@@ -9,6 +9,7 @@
 ###############################################################################
 
 library(dplyr)
+library(purrr)
 library(tidyr)
 
 #' Simulate fixed-sequence PK study

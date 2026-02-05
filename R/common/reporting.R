@@ -126,7 +126,7 @@ make_gt_table <- function(final_table,
     cols_label(
       adj_gmean = "gMean",
       adj_gse   = "gSE",
-      ratio     = "Ratio (T/R) %",
+      ratio     = "Ratio (T/R, %)",
       gse       = "gSE",
       lower     = "Lower (%)",
       upper     = "Upper (%)",
@@ -192,61 +192,6 @@ make_gt_table <- function(final_table,
 #' indicates equality between treatments.
 #'
 #' @seealso \code{\link{make_gt_table}}, \code{\link{build_final_table}}
-
-make_forest_plot <- function(final_table, model_type = c("fixed", "mixed"), x_limits = c(60, 130), ref_lines = c(80, 100, 125), dataset_type = c("balanced", "unbalanced")) {
-  
-  model_type <- match.arg(model_type)
-  dataset_type <- match.arg(dataset_type)
-  
-  subject_label <- switch(
-    model_type,
-    fixed = "fixed effect",
-    mixed = "random effect"
-  )
-  
-  dataset_label <- switch(
-    dataset_type,
-    balanced = "balanced dataset",
-    unbalanced = "unbalanced dataset"
-  )
-  
-  title_text <- paste0(
-    "Relative bioavailability of treatment (T) vs reference (R)\n",
-    "with subject as ",
-    subject_label,
-    " - ", dataset_label
-  )
-  
-  params <- endpoint_map$Parameter
-  Group <- endpoint_map$Group
-  
-  plot_data <- final_table %>%
-    filter(
-      !is.na(lower), lower != "",
-      !is.na(upper), upper != ""
-    ) %>%
-    mutate(
-      ratio = as.numeric(ratio),
-      lower = as.numeric(lower),
-      upper = as.numeric(upper),
-      Parameter = factor(rep(params, each = 1), levels = c("Cmax", "AUC0_tz", "AUCINF_pred")),
-      Group = factor(Group)
-    ) %>%
-    arrange(Parameter) %>%
-    select(Parameter, Group, ratio, lower, upper)
-  
-  ggplot(plot_data, aes(y = Parameter, x = ratio)) +
-    geom_point(color = "blue", size = 3) +
-    geom_errorbarh(aes(xmin = lower, xmax = upper), height = 0.2, color = "blue", linewidth = 1) +
-    geom_vline(xintercept = 100, linetype = "dashed", color = "black") +
-    geom_vline(xintercept = c(80, 125), linetype = "solid", color = "black") +
-    facet_wrap(~ Group, ncol = 1, scales = "free_y") +
-    scale_x_continuous(name = "(%)", limits = x_limits) +
-    ylab("PK parameter") +
-    ggtitle(title_text) +
-    theme_minimal(base_size = 13) +
-    theme(strip.text = element_text(size = 14), panel.spacing = unit(1, "lines"))
-}
 
 make_forest_plot <- function(final_table,
                              design = c("crossover", "fixed_sequence", "parallel"),
@@ -334,7 +279,7 @@ make_forest_plot <- function(final_table,
     geom_vline(xintercept = ref_lines[ref_lines != 100],
                linetype = "solid", color = "black") +
     facet_wrap(~ Group, ncol = 1, scales = "free_y") +
-    scale_x_continuous(name = "gMean ratio (T/R) %", limits = x_limits) +
+    scale_x_continuous(name = "gMean ratio (T/R, %)", limits = x_limits) +
     ylab("PK parameter") +
     ggtitle(title_text) +
     theme_minimal(base_size = 13) +

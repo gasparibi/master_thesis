@@ -19,6 +19,7 @@
 ###############################################################################
 
 library(dplyr)
+library(purrr)
 library(tidyr)
 
 #' Simulate 2x2 crossover PK study
@@ -59,7 +60,7 @@ simulate_crossover <- function(
   )
   
   # ---- Mean (log-scale) parameters ----
-  mu_table <- tibble::tribble(
+  mu_table <- tribble(
     ~Treatment, ~Parameter,       ~mu,
     "T",        "AUC0_tz",        6.146901,
     "T",        "AUCINF_pred",    6.173306,
@@ -70,7 +71,7 @@ simulate_crossover <- function(
   )
   
   # ---- Variance components ----
-  var_components <- tibble::tribble(
+  var_components <- tribble(
     ~Parameter,       ~between_sd, ~within_sd,
     "AUC0_tz",             0.3100274, 0.1033928,
     "AUCINF_pred",         0.3078800, 0.1015943,

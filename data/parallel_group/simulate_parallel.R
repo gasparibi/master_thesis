@@ -9,6 +9,7 @@
 ###############################################################################
 
 library(dplyr)
+library(purrr)
 library(tidyr)
 
 #' Simulate parallel-group PK study
