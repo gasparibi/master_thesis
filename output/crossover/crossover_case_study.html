@@ -1,0 +1,3866 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.33">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Bianca Gasparini">
+<meta name="dcterms.date" content="2026-02-05">
+
+<title>Relative bioavailability assessment in R: a Phase 1 crossover study</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="crossover_case_study_files/libs/clipboard/clipboard.min.js"></script>
+<script src="crossover_case_study_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="crossover_case_study_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="crossover_case_study_files/libs/quarto-html/popper.min.js"></script>
+<script src="crossover_case_study_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="crossover_case_study_files/libs/quarto-html/anchor.min.js"></script>
+<link href="crossover_case_study_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="crossover_case_study_files/libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="crossover_case_study_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="crossover_case_study_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="crossover_case_study_files/libs/bootstrap/bootstrap-8a894fcc3cb5e37eb5bf30def131be2f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a>
+  <ul class="collapse">
+  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation"><span class="header-section-number">1.1</span> Motivation</a></li>
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives"><span class="header-section-number">1.2</span> Objectives</a></li>
+  </ul></li>
+  <li><a href="#study-design" id="toc-study-design" class="nav-link" data-scroll-target="#study-design"><span class="header-section-number">2</span> Study design</a>
+  <ul class="collapse">
+  <li><a href="#trial-overview" id="toc-trial-overview" class="nav-link" data-scroll-target="#trial-overview"><span class="header-section-number">2.1</span> Trial overview</a></li>
+  <li><a href="#endpoints" id="toc-endpoints" class="nav-link" data-scroll-target="#endpoints"><span class="header-section-number">2.2</span> Endpoints</a></li>
+  <li><a href="#statistical-framework" id="toc-statistical-framework" class="nav-link" data-scroll-target="#statistical-framework"><span class="header-section-number">2.3</span> Statistical framework</a>
+  <ul class="collapse">
+  <li><a href="#log-transformation" id="toc-log-transformation" class="nav-link" data-scroll-target="#log-transformation"><span class="header-section-number">2.3.1</span> Log-transformation</a></li>
+  <li><a href="#measuring-relative-bioavailability" id="toc-measuring-relative-bioavailability" class="nav-link" data-scroll-target="#measuring-relative-bioavailability"><span class="header-section-number">2.3.2</span> Measuring relative bioavailability</a></li>
+  <li><a href="#statistical-modeling" id="toc-statistical-modeling" class="nav-link" data-scroll-target="#statistical-modeling"><span class="header-section-number">2.3.3</span> Statistical modeling</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#dataset-simulation" id="toc-dataset-simulation" class="nav-link" data-scroll-target="#dataset-simulation"><span class="header-section-number">3</span> Dataset simulation</a>
+  <ul class="collapse">
+  <li><a href="#structure" id="toc-structure" class="nav-link" data-scroll-target="#structure"><span class="header-section-number">3.1</span> Structure</a></li>
+  <li><a href="#reproducibility-and-code-organization" id="toc-reproducibility-and-code-organization" class="nav-link" data-scroll-target="#reproducibility-and-code-organization"><span class="header-section-number">3.2</span> Reproducibility and code organization</a></li>
+  <li><a href="#exporting-the-datasets" id="toc-exporting-the-datasets" class="nav-link" data-scroll-target="#exporting-the-datasets"><span class="header-section-number">3.3</span> Exporting the datasets</a></li>
+  </ul></li>
+  <li><a href="#sec-r-pipeline" id="toc-sec-r-pipeline" class="nav-link" data-scroll-target="#sec-r-pipeline"><span class="header-section-number">4</span> R analysis pipeline</a>
+  <ul class="collapse">
+  <li><a href="#project-structure" id="toc-project-structure" class="nav-link" data-scroll-target="#project-structure"><span class="header-section-number">4.1</span> Project structure</a></li>
+  <li><a href="#model-fitting" id="toc-model-fitting" class="nav-link" data-scroll-target="#model-fitting"><span class="header-section-number">4.2</span> Model fitting</a></li>
+  <li><a href="#back-transformation-and-table-assembly" id="toc-back-transformation-and-table-assembly" class="nav-link" data-scroll-target="#back-transformation-and-table-assembly"><span class="header-section-number">4.3</span> Back-transformation and table assembly</a></li>
+  <li><a href="#reporting-tables-and-plots" id="toc-reporting-tables-and-plots" class="nav-link" data-scroll-target="#reporting-tables-and-plots"><span class="header-section-number">4.4</span> Reporting tables and plots</a></li>
+  </ul></li>
+  <li><a href="#sec-results" id="toc-sec-results" class="nav-link" data-scroll-target="#sec-results"><span class="header-section-number">5</span> Interpretation of results</a></li>
+  <li><a href="#sec-sas-pipeline" id="toc-sec-sas-pipeline" class="nav-link" data-scroll-target="#sec-sas-pipeline"><span class="header-section-number">6</span> SAS analysis pipeline</a></li>
+  <li><a href="#sec-comparison" id="toc-sec-comparison" class="nav-link" data-scroll-target="#sec-comparison"><span class="header-section-number">7</span> Comparison with SAS outputs</a></li>
+  <li><a href="#sec-discussion" id="toc-sec-discussion" class="nav-link" data-scroll-target="#sec-discussion"><span class="header-section-number">8</span> Discussion and conclusions</a>
+  <ul class="collapse">
+  <li><a href="#summary-of-objectives" id="toc-summary-of-objectives" class="nav-link" data-scroll-target="#summary-of-objectives"><span class="header-section-number">8.1</span> Summary of objectives</a></li>
+  <li><a href="#key-findings" id="toc-key-findings" class="nav-link" data-scroll-target="#key-findings"><span class="header-section-number">8.2</span> Key findings</a></li>
+  <li><a href="#limitations-and-observed-discrepancies" id="toc-limitations-and-observed-discrepancies" class="nav-link" data-scroll-target="#limitations-and-observed-discrepancies"><span class="header-section-number">8.3</span> Limitations and observed discrepancies</a></li>
+  <li><a href="#conclusions-and-outlook" id="toc-conclusions-and-outlook" class="nav-link" data-scroll-target="#conclusions-and-outlook"><span class="header-section-number">8.4</span> Conclusions and outlook</a></li>
+  </ul></li>
+  <li><a href="#reproducibility" id="toc-reproducibility" class="nav-link" data-scroll-target="#reproducibility"><span class="header-section-number">9</span> Reproducibility</a>
+  <ul class="collapse">
+  <li><a href="#software-environment" id="toc-software-environment" class="nav-link" data-scroll-target="#software-environment"><span class="header-section-number">9.1</span> Software environment</a></li>
+  <li><a href="#repository-structure" id="toc-repository-structure" class="nav-link" data-scroll-target="#repository-structure"><span class="header-section-number">9.2</span> Repository structure</a></li>
+  <li><a href="#reproducing-the-r-analyses" id="toc-reproducing-the-r-analyses" class="nav-link" data-scroll-target="#reproducing-the-r-analyses"><span class="header-section-number">9.3</span> Reproducing the R analyses</a></li>
+  <li><a href="#reproducing-the-sas-analyses" id="toc-reproducing-the-sas-analyses" class="nav-link" data-scroll-target="#reproducing-the-sas-analyses"><span class="header-section-number">9.4</span> Reproducing the SAS analyses</a></li>
+  <li><a href="#notes-on-platform-differences" id="toc-notes-on-platform-differences" class="nav-link" data-scroll-target="#notes-on-platform-differences"><span class="header-section-number">9.5</span> Notes on platform differences</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">10</span> References</a></li>
+  <li><a href="#appendix-a---model-validation" id="toc-appendix-a---model-validation" class="nav-link" data-scroll-target="#appendix-a---model-validation">Appendix A - Model validation</a></li>
+  <li><a href="#appendix-b---interpretation-of-other-results" id="toc-appendix-b---interpretation-of-other-results" class="nav-link" data-scroll-target="#appendix-b---interpretation-of-other-results">Appendix B - Interpretation of other results</a>
+  <ul class="collapse">
+  <li><a href="#balanced-dataset" id="toc-balanced-dataset" class="nav-link" data-scroll-target="#balanced-dataset">Balanced dataset</a></li>
+  <li><a href="#unbalanced-dataset" id="toc-unbalanced-dataset" class="nav-link" data-scroll-target="#unbalanced-dataset">Unbalanced dataset</a></li>
+  </ul></li>
+  <li><a href="#appendix-c---comparison-with-other-sas-outputs" id="toc-appendix-c---comparison-with-other-sas-outputs" class="nav-link" data-scroll-target="#appendix-c---comparison-with-other-sas-outputs">Appendix C - Comparison with other SAS outputs</a>
+  <ul class="collapse">
+  <li><a href="#balanced-dataset-1" id="toc-balanced-dataset-1" class="nav-link" data-scroll-target="#balanced-dataset-1">Balanced dataset</a></li>
+  <li><a href="#unbalanced-dataset-1" id="toc-unbalanced-dataset-1" class="nav-link" data-scroll-target="#unbalanced-dataset-1">Unbalanced dataset</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Relative bioavailability assessment in R: a Phase 1 crossover study</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Bianca Gasparini </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 5, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<section id="motivation" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="motivation"><span class="header-section-number">1.1</span> Motivation</h2>
+<p>Pharmaceutical companies are increasingly exploring R as an alternative to SAS for clinical trial analyses. R offers advantages such as being open source and providing modern statistical and visualization capabilities. However, before R can be considered in regulatory contexts, the reliability and reproducibility of its results must be demonstrated.</p>
+<p>In this project, reproducibility with SAS is used as a practical benchmark for assessing reliability, since SAS remains widely accepted by regulatory authorities. The case study focuses on a 2×2 crossover design, while the accompanying repository also implements fixed-sequence and parallel-group designs. An end-to-end R workflow is presented for assessing relative bioavailability in Phase 1 clinical trials using both balanced and unbalanced simulated datasets, with direct comparison to SAS outputs where relevant.</p>
+</section>
+<section id="objectives" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="objectives"><span class="header-section-number">1.2</span> Objectives</h2>
+<p>The objectives of this project are to:</p>
+<ul>
+<li>Demonstrate how fixed- and mixed-effects ANOVA models for relative bioavailability can be implemented in R.</li>
+<li>Show that R-based analyses can reproduce SAS results under standard regulatory scenarios.</li>
+<li>Simulate and validate datasets to support reproducible method development.</li>
+<li>Develop automated pipelines capable of producing regulatory-style tables and figures.</li>
+<li>Investigate and document the origin of any numerical discrepancies between software platforms.</li>
+</ul>
+</section>
+</section>
+<section id="study-design" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Study design</h1>
+<section id="trial-overview" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="trial-overview"><span class="header-section-number">2.1</span> Trial overview</h2>
+<p>The goal of a relative bioavailability study is to assess how a test product (T) performs in comparison to a reference product (R). Such studies aim to characterize differences in pharmacokinetic behavior, determine the extent and nature of these differences, and evaluate their potential impact on systemic exposure.</p>
+<p>The main trial design considered in this project is the crossover design, in which the subjects are randomized to receive treatments in a different sequence. This design reduces inter-subject variability and allows the control of factors that may change over time.</p>
+<p>Two other study designs are common in Phase 1 trials: the fixed-sequence design (similar to a crossover design but with all subjects receiving treatments in the same predetermined order) and the parallel-group design, in which different groups of subjects are assigned to different treatments. This case study focuses primarily on the crossover design, as it is favored in Phase 1 <span class="citation" data-cites="EMA2010">[<a href="#ref-EMA2010" role="doc-biblioref">1</a>]</span> and many of its functions generalize naturally to the other designs. To see the implementation of the other designs in R, refer to folders R/fixed_sequence and R/parallel_group in the accompanying repository.</p>
+</section>
+<section id="endpoints" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="endpoints"><span class="header-section-number">2.2</span> Endpoints</h2>
+<p>To evaluate and compare bioavailability across different drug formulations, specific pharmacokinetic (PK) parameters are used. Common primary endpoints include:</p>
+<ul>
+<li><p><span class="math inline">\(AUC_{0\text{–}tz}\)</span> (<em>area under the concentration–time curve from time 0 to the last quantifiable concentration</em>): represents total drug exposure up to the final measurable time point.</p></li>
+<li><p><span class="math inline">\(C_\text{max}\)</span> (<em>maximum observed concentration</em>): indicates the peak plasma concentration after dosing and serves as a measure of the rate of absorption.</p></li>
+</ul>
+<p>A commonly used secondary endpoint is <span class="math inline">\(AUC_{0\text{–}\infty}\)</span> (<em>area under the curve extrapolated to infinity</em>), which extends exposure estimation beyond the last measurable concentration to approximate total systemic exposure.</p>
+</section>
+<section id="statistical-framework" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="statistical-framework"><span class="header-section-number">2.3</span> Statistical framework</h2>
+<section id="log-transformation" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="log-transformation"><span class="header-section-number">2.3.1</span> Log-transformation</h3>
+<p>The analysis of PK parameters typically relies on statistical models applied to log-transformed data.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> PK data are often right-skewed, and log-transformation improves symmetry and stabilizes variances. It also simplifies modeling by converting multiplicative relationships into additive ones.</p>
+<p>For interpretability, results from these analyses are subsequently back-transformed to the original scale.</p>
+</section>
+<section id="measuring-relative-bioavailability" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="measuring-relative-bioavailability"><span class="header-section-number">2.3.2</span> Measuring relative bioavailability</h3>
+<p>Descriptive statistics such as geometric means (gMean) and geometric standard errors (gSE) are commonly reported for each treatment. However, single-treatment summaries are often insufficient for assessing relative bioavailability.</p>
+<p>In early-phase clinical research, the primary interest lies in relative bioavailability, which provides a descriptive comparison of pharmacokinetic profiles and focuses on estimating the difference in rate and extent of absorption between a test formulation and a reference formulation <span class="citation" data-cites="FDA2002">[<a href="#ref-FDA2002" role="doc-biblioref">2</a>]</span>. Rather than quantifying absolute exposure, the objective is to estimate the treatment contrast and its associated confidence interval (CI). No formal hypothesis testing is required, although conventional bioequivalence margins are often shown for interpretative context.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+</section>
+<section id="statistical-modeling" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="statistical-modeling"><span class="header-section-number">2.3.3</span> Statistical modeling</h3>
+<p>This section formalizes the statistical models implemented in the R code that follows. While regulatory analyses are often conducted using software procedures rather than explicit mathematical notation, presenting the models clarifies the assumptions underlying each design and facilitates comparison with SAS implementations.</p>
+<p>The statistical models used in this project consist of fixed-effects and mixed-effects ANOVA models applied to log-transformed pharmacokinetic responses. ANOVA models compare group means while accounting for multiple sources of variability. Fixed-effects models assume that all relevant sources of variability are represented by observed factors, whereas mixed-effects models incorporate random effects to capture unexplained variability.</p>
+<p>In crossover designs, both modeling approaches are commonly considered. Although the model equation is the same, the key distinction lies in how subject effects are treated (either as fixed or random). Regulatory agencies recommend treating subjects as fixed effects for primary analyses and as random effects for supportive analyses <span class="citation" data-cites="ema2024m13a">[<a href="#ref-ema2024m13a" role="doc-biblioref">4</a>]</span>.</p>
+<p>The model includes:</p>
+<ul>
+<li><p>Sequence (fixed effect): The order in which treatments are assigned.</p></li>
+<li><p>Subject nested within sequence (either fixed or random effect): The individual subjects within each sequence group.<br>
+Each subject is uniquely assigned to one sequence and receives treatments only in that sequence’s order. From a modeling perspective, this means that subjects are considered <em>nested within</em> their sequence, since they cannot belong to more than one sequence.</p></li>
+<li><p>Period (fixed effect): The period at which each treatment is administered.</p></li>
+<li><p>Treatment (fixed effect): The effect of the administered drug.</p></li>
+</ul>
+<p>The model can be expressed as follows</p>
+<p><span id="eq-crossover"><span class="math display">\[
+Y_{ijkm} = \mu + \zeta_i + s_{im} + \pi_j + \tau_k + \varepsilon_{ijkm},
+\tag{1}\]</span></span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(Y_{ijkm}\)</span> is the log-transformed response measured on subject <span class="math inline">\(m\)</span> in sequence <span class="math inline">\(i\)</span>, receiving treatment <span class="math inline">\(k\)</span> in period <span class="math inline">\(j\)</span>.</li>
+<li><span class="math inline">\(\mu\)</span> is the overall mean of the log-transformed response.</li>
+<li><span class="math inline">\(\zeta_i\)</span> represents the effect of sequence <span class="math inline">\(i\)</span> (<span class="math inline">\(i = 1, \dots, S\)</span>).</li>
+<li><span class="math inline">\(s_{im}\)</span> is the subject effect nested within sequence (<span class="math inline">\(m = 1, 2, \dots, n_i\)</span>).</li>
+<li><span class="math inline">\(\pi_j\)</span> denotes the period effect (<span class="math inline">\(j = 1, \dots, P\)</span>).</li>
+<li><span class="math inline">\(\tau_k\)</span> represents the treatment effect (<span class="math inline">\(k = 1, \dots, K\)</span>).</li>
+<li><span class="math inline">\(\varepsilon_{ijkm}\)</span> is the random error associated with subject <span class="math inline">\(m\)</span> in sequence <span class="math inline">\(i\)</span>, receiving treatment <span class="math inline">\(k\)</span> in period <span class="math inline">\(j\)</span>.</li>
+</ul>
+<p>The subject effect is the only factor that may be modeled as either fixed or random.<br>
+Treating subject as fixed means focusing only on the specific subjects in the study, without assuming they represent a larger population. It means each subject has a specific, non-random influence on the outcome.<br>
+Treating subject as random assumes subjects are a sample from a broader population, with their contributions modeled as random deviations from the overall mean <span class="citation" data-cites="sas_varcomp">[<a href="#ref-sas_varcomp" role="doc-biblioref">5</a>]</span>.</p>
+<p><strong>Subject as a fixed effect</strong></p>
+<p>The stochastic term is</p>
+<p><span id="eq-crossover-fe"><span class="math display">\[
+\varepsilon_{ijkm} \sim N(0, \sigma^2).
+\tag{2}\]</span></span></p>
+<p>Here, <span class="math inline">\(\sigma^2\)</span> captures all unexplained variability.</p>
+<p><strong>Subject as a random effect</strong></p>
+<p>The stochastic terms are</p>
+<p><span id="eq-crossover-re"><span class="math display">\[
+s_{im} \sim N(0, \sigma_B^2) \quad \text{i.i.d.}, \qquad
+\varepsilon_{ijkm} \sim N(0, \sigma_W^2) \quad \text{i.i.d.}.
+\tag{3}\]</span></span></p>
+<p>This formulation partitions variability into two interpretable components: between-subject (<span class="math inline">\(\sigma_B^2\)</span>) and within-subject (<span class="math inline">\(\sigma_W^2\)</span>):</p>
+<ul>
+<li><p><span class="math inline">\(\sigma_B^2\)</span> captures variability between individuals. It reflects how different subjects are from each other in terms of their overall drug exposure, regardless of treatment.</p></li>
+<li><p><span class="math inline">\(\sigma_W^2\)</span> measures variability within the same subject across different periods or treatments. It reflects how consistent a subject’s response is from one treatment to another.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="dataset-simulation" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Dataset simulation</h1>
+<section id="structure" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="structure"><span class="header-section-number">3.1</span> Structure</h2>
+<p>An artificial dataset was simulated to mimic a 2×2 crossover study design commonly used in bioavailability assessments. The simulated study includes:</p>
+<ul>
+<li><p>16 subjects randomized in a 1:1 ratio to treatment sequences (<code>TR</code> and <code>RT</code>),</p></li>
+<li><p>Two treatments: Test (<code>T</code>) and Reference (<code>R</code>),</p></li>
+<li><p>Three pharmacokinetic parameters: <code>AUC0_tz</code>, <code>Cmax</code>, and <code>AUCINF_pred</code>.</p></li>
+</ul>
+<p>The artificial dataset will be referred to as <code>sim_cr</code> throughout this case study. It includes variables for subject, sequence, period, treatment, PK parameter, as well as the PK result on both the log and original scale.</p>
+<p>The simulation was refined to incorporate variance components, explicitly modeling both between-subject and within-subject variability. This allowed for a more realistic representation of the data structure and enabled the successful estimation of random effects in the mixed models.</p>
+<p>For each subject, parameter values on the log scale were generated as the sum of a fixed treatment mean, a subject-level random effect (capturing between-subject variability), and a residual error term (representing within-subject variability). These values were then exponentiated to return to the original scale.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p><strong>Choice of parameters</strong></p>
+<p>The treatment-specific mean values and variance components used in the simulation were pre-specified to resemble plausible pharmacokinetic profiles observed in Phase 1 bioavailability studies.<br>
+Log-scale means were selected so that, after exponentiation, the resulting PK metrics would fall within realistic ranges, while maintaining moderate differences between Test and Reference products. Similarly, between-subject and within-subject variability were chosen to reflect a certain level of variation. These values were not estimated from empirical data but were fixed a priori for the purpose of creating reproducible example datasets suitable for methodological demonstration and software comparison.</p>
+<p><strong>Unbalanced dataset</strong></p>
+<p>While <code>sim_cr</code> represents a balanced design, with each subject contributing one observation per period, this idealized setting does not always reflect real clinical trials. In practice, subjects may discontinue participation or individual observations may be excluded due to protocol deviations or data quality issues. In such cases, subjects are typically retained in the analysis because, even with incomplete data, they still provide valuable information (particularly in Phase 1 studies, where sample sizes are often small).</p>
+<p>As a result, datasets frequently become unbalanced, and this imbalance can affect statistical analyses. To investigate the impact of incomplete data, a second dataset, <code>sim_cr_un</code>, was therefore created by removing the second-period observation for subjects 5 and 6.</p>
+</section>
+<section id="reproducibility-and-code-organization" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="reproducibility-and-code-organization"><span class="header-section-number">3.2</span> Reproducibility and code organization</h2>
+<p>To promote transparency and reproducibility, the simulation of the crossover datasets was implemented in a standalone R script rather than embedded directly in this report. The code chunks shown below illustrate how the simulated data were generated and loaded for analysis, while the complete simulation logic (including parameter tables, variance specifications, and randomization procedures) is contained in the dedicated file:</p>
+<p><code>data/crossover/simulate_crossover.R</code></p>
+<p>This modular structure ensures that the report remains readable while allowing interested readers to inspect, modify, or extend the simulation framework directly within the repository.</p>
+<p>The code below sources the simulation function and creates both the balanced and unbalanced datasets used throughout this case study.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../../data/crossover/simulate_crossover.R"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">simulate_crossover</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sim_cr    <span class="ot">&lt;-</span> sim<span class="sc">$</span>balanced</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sim_cr_un <span class="ot">&lt;-</span> sim<span class="sc">$</span>unbalanced</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The simulated datasets were subsequently validated to ensure consistency with the specified design and variance structure (see Appendix A).</p>
+</section>
+<section id="exporting-the-datasets" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="exporting-the-datasets"><span class="header-section-number">3.3</span> Exporting the datasets</h2>
+<p>The simulated datasets can optionally be saved both as RDS files (to preserve factor structure and numeric precision) and as CSV files for inspection in other software.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(sim_cr, <span class="st">"data/crossover/example/sim_cr.rds"</span>) </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(sim_cr, <span class="st">"data/crossover/example/sim_cr.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>) </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(sim_cr_un, <span class="st">"data/crossover/example/sim_cr_un.rds"</span>) </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(sim_cr_un, <span class="st">"data/crossover/example/sim_cr_un.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Export chunks are not evaluated by default to avoid overwriting committed datasets.</p>
+</section>
+</section>
+<section id="sec-r-pipeline" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> R analysis pipeline</h1>
+<p>This section describes the modular R pipeline used to analyse the simulated crossover datasets.</p>
+<p>All modelling, transformation, and reporting steps were implemented as reusable functions and organised by purpose.</p>
+<p>The objective of this design was to mirror a production-style pharmacokinetic analysis workflow: models are fit consistently across endpoints, estimates are back-transformed and formatted for regulatory reporting, and outputs are summarised in tables and forest plots suitable for inclusion in technical reports.</p>
+<p>Readers interested in implementation details and function-level documentation can inspect the source files referenced below.</p>
+<section id="project-structure" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="project-structure"><span class="header-section-number">4.1</span> Project structure</h2>
+<p>All analysis steps were implemented as modular functions stored in the <code>R/</code> directory.</p>
+<p>Crossover-specific modelling utilities are located in <code>R/crossover/</code> and include functions for fitting fixed- and mixed-effects models, computing least-squares means, and deriving treatment contrasts.</p>
+<p>General-purpose helpers shared across study designs (such as back-transformation to the original scale and generation of regulatory-style tables and figures) are located in <code>R/common/</code>.</p>
+<p>In the case study below, these functions are sourced and applied to the simulated datasets; full implementations and inline documentation are available in the repository.</p>
+</section>
+<section id="model-fitting" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="model-fitting"><span class="header-section-number">4.2</span> Model fitting</h2>
+<p>Model fitting is performed using a single entry-point function that splits the dataset by pharmacokinetic endpoint and applies either a fixed- or mixed-effects ANOVA model to each parameter.</p>
+<p>For crossover designs, the models include sequence, period, and treatment effects, with subject handled either as a fixed effect or as a random effect depending on the selected formulation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../../R/crossover/model_fit_cr.R"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>models_fe <span class="ot">&lt;-</span> <span class="fu">run_models_cr</span>(sim_cr, <span class="st">"fixed"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>models_me <span class="ot">&lt;-</span> <span class="fu">run_models_cr</span>(sim_cr, <span class="st">"mixed"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>models_fe_un <span class="ot">&lt;-</span> <span class="fu">run_models_cr</span>(sim_cr_un, <span class="st">"fixed"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>models_me_un <span class="ot">&lt;-</span> <span class="fu">run_models_cr</span>(sim_cr_un, <span class="st">"mixed"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="back-transformation-and-table-assembly" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="back-transformation-and-table-assembly"><span class="header-section-number">4.3</span> Back-transformation and table assembly</h2>
+<p>Model outputs are produced on the log scale. These are subsequently back-transformed to obtain geometric means, geometric standard errors, treatment ratios, confidence intervals, and intra-individual variability metrics.</p>
+<p>Endpoint-specific results are then combined with subject counts and grouped into formatted blocks that can be assembled into a single reporting table spanning all pharmacokinetic parameters.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../../R/common/back_transform.R"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../../R/common/table_builders.R"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>endpoint_map <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parameter =</span> <span class="fu">c</span>(<span class="st">"AUC0_tz"</span>, <span class="st">"Cmax"</span>, <span class="st">"AUCINF_pred"</span>),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Group     =</span> <span class="fu">c</span>(<span class="st">"Primary endpoints"</span>, <span class="st">"Primary endpoints"</span>, <span class="st">"Secondary endpoint"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>final_table_fe <span class="ot">&lt;-</span> <span class="fu">build_final_table</span>(models_fe, sim_cr, endpoint_map)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>final_table_me <span class="ot">&lt;-</span> <span class="fu">build_final_table</span>(models_me, sim_cr, endpoint_map)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>final_table_fe_un <span class="ot">&lt;-</span> <span class="fu">build_final_table</span>(models_fe_un, sim_cr_un, endpoint_map)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>final_table_me_un <span class="ot">&lt;-</span> <span class="fu">build_final_table</span>(models_me_un, sim_cr_un, endpoint_map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reporting-tables-and-plots" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="reporting-tables-and-plots"><span class="header-section-number">4.4</span> Reporting tables and plots</h2>
+<p>Final outputs are rendered using standardised reporting functions that produce:</p>
+<ul>
+<li><p>publication-ready summary tables via <code>gt</code>, and</p></li>
+<li><p>forest plots displaying treatment ratios and confidence intervals across endpoints.</p></li>
+</ul>
+<p>Titles, footnotes, and annotations are automatically adapted to the study design, model formulation, and dataset structure, allowing the same reporting code to be reused across scenarios.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../../R/common/reporting.R"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatted table</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>gt_table_fe <span class="ot">&lt;-</span> <span class="fu">make_gt_table</span>(final_table_fe, <span class="st">"crossover"</span>, <span class="st">"fixed"</span>, <span class="st">"balanced"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>gt_table_me <span class="ot">&lt;-</span> <span class="fu">make_gt_table</span>(final_table_me, <span class="st">"crossover"</span>, <span class="st">"mixed"</span>, <span class="st">"balanced"</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>gt_table_fe_un <span class="ot">&lt;-</span> <span class="fu">make_gt_table</span>(final_table_fe_un, <span class="st">"crossover"</span>, <span class="st">"fixed"</span>, <span class="st">"unbalanced"</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>gt_table_me_un <span class="ot">&lt;-</span> <span class="fu">make_gt_table</span>(final_table_me_un, <span class="st">"crossover"</span>, <span class="st">"mixed"</span>, <span class="st">"unbalanced"</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Forest plots</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>forest_fe <span class="ot">&lt;-</span> <span class="fu">make_forest_plot</span>(final_table_fe, <span class="st">"crossover"</span>, <span class="st">"fixed"</span>, <span class="st">"balanced"</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>forest_me <span class="ot">&lt;-</span> <span class="fu">make_forest_plot</span>(final_table_me, <span class="st">"crossover"</span>, <span class="st">"mixed"</span>, <span class="st">"balanced"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>forest_fe_un <span class="ot">&lt;-</span> <span class="fu">make_forest_plot</span>(final_table_fe_un, <span class="st">"crossover"</span>, <span class="st">"fixed"</span>, <span class="st">"unbalanced"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>forest_me_un <span class="ot">&lt;-</span> <span class="fu">make_forest_plot</span>(final_table_me_un, <span class="st">"crossover"</span>, <span class="st">"mixed"</span>, <span class="st">"unbalanced"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="sec-results" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Interpretation of results</h1>
+<p>This chapter presents relative bioavailability results obtained in R for the balanced crossover dataset analysed using a fixed-effects model. They are interpreted from a regulatory perspective, with emphasis on treatment ratio estimates and their associated 90% confidence intervals.</p>
+<p>The numerical results for the primary and secondary endpoints are summarised in <a href="#tbl-gt_table_fe" class="quarto-xref">Table&nbsp;1</a>:</p>
+<ul>
+<li><span class="math inline">\(AUC_{0-tz}\)</span>: <strong>90.01%</strong> (90% CI: <strong>85.23% - 95.07%</strong>)</li>
+<li><span class="math inline">\(C_\text{max}\)</span>: <strong>97.24%</strong> (90% CI: <strong>87.65% - 107.87%</strong>)</li>
+<li><span class="math inline">\(AUC_{0-\infty}\)</span>: <strong>87.92%</strong> (90% CI: <strong>81.06% - 95.38%</strong>)</li>
+</ul>
+<p>These confidence intervals were constructed using the two one-sided t-tests (TOST) procedure at a 5% significance level, corresponding to 90% confidence intervals for the test-to-reference geometric mean ratios. The conventional bioequivalence acceptance limits of 80% to 125% are displayed in <a href="#fig-forest_fe" class="quarto-xref">Figure&nbsp;1</a> to facilitate visual interpretation.</p>
+<p>For all three pharmacokinetic parameters, the 90% confidence intervals lie entirely within the 80–125% reference range, supporting a conclusion of comparable systemic exposure between the two treatments. Specifically:</p>
+<ul>
+<li>For <span class="math inline">\(AUC_{0-tz}\)</span> and <span class="math inline">\(AUC_{0-\infty}\)</span>, the confidence intervals do not include 100%, indicating slightly lower exposure for the test treatment; however, the magnitude of the difference remains within the 80–125% limits and is not considered meaningful in this exploratory context.</li>
+<li>For <span class="math inline">\(C_\text{max}\)</span>, the confidence interval includes 100%, indicating a close alignment between treatments with respect to peak exposure.</li>
+</ul>
+<p>Overall, the results indicate no meaningful pharmacokinetic differences between the test and reference formulations and support the assessment of relative bioavailability under a fixed-effects crossover model.</p>
+<p>Analyses of the remaining model and dataset combinations are provided in Appendix B. In the balanced dataset, fixed- and mixed-effects models produced identical estimates, as expected. In the unbalanced dataset, small numerical differences emerged between modeling approaches, including a borderline case in which the fixed-effects analysis yielded a lower confidence bound slightly below 80% for <span class="math inline">\(AUC_{0-\infty}\)</span>, while the mixed-effects model remained within the conventional bioequivalence limits. These findings highlight the sensitivity of regulatory conclusions to model choice when data are incomplete.</p>
+<div id="tbl-gt_table_fe" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-gt_table_fe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Relative bioavailability assessment of T vs R, using a fixed-effects model and a balanced dataset.
+</figcaption>
+<div aria-describedby="tbl-gt_table_fe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<div id="qwvjjfaycd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qwvjjfaycd table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#qwvjjfaycd thead, #qwvjjfaycd tbody, #qwvjjfaycd tfoot, #qwvjjfaycd tr, #qwvjjfaycd td, #qwvjjfaycd th {
+  border-style: none;
+}
+
+#qwvjjfaycd p {
+  margin: 0;
+  padding: 0;
+}
+
+#qwvjjfaycd .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#qwvjjfaycd .gt_title {
+  color: #333333;
+  font-size: 16px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qwvjjfaycd .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qwvjjfaycd .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qwvjjfaycd .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qwvjjfaycd .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qwvjjfaycd .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qwvjjfaycd .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qwvjjfaycd .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#qwvjjfaycd .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#qwvjjfaycd .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qwvjjfaycd .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qwvjjfaycd .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qwvjjfaycd .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qwvjjfaycd .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qwvjjfaycd .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#qwvjjfaycd .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#qwvjjfaycd .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#qwvjjfaycd .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qwvjjfaycd .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#qwvjjfaycd .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qwvjjfaycd .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#qwvjjfaycd .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qwvjjfaycd .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qwvjjfaycd .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qwvjjfaycd .gt_left {
+  text-align: left;
+}
+
+#qwvjjfaycd .gt_center {
+  text-align: center;
+}
+
+#qwvjjfaycd .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qwvjjfaycd .gt_font_normal {
+  font-weight: normal;
+}
+
+#qwvjjfaycd .gt_font_bold {
+  font-weight: bold;
+}
+
+#qwvjjfaycd .gt_font_italic {
+  font-style: italic;
+}
+
+#qwvjjfaycd .gt_super {
+  font-size: 65%;
+}
+
+#qwvjjfaycd .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#qwvjjfaycd .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#qwvjjfaycd .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#qwvjjfaycd .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#qwvjjfaycd .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#qwvjjfaycd .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#qwvjjfaycd .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#qwvjjfaycd .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#qwvjjfaycd div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="gt_heading header">
+<th colspan="9" class="gt_heading gt_title gt_font_normal gt_bottom_border">Adjusted geometric means and relative bioavailability of treatment (T) vs reference (R) with subject as fixed effect - balanced dataset</th>
+</tr>
+<tr class="gt_col_headings gt_spanner_row even">
+<th data-quarto-table-cell-role="th" scope="col"></th>
+<th colspan="3" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"></th>
+<th colspan="5" id="Comparison vs reference (R)" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Comparison vs reference (R)
+</div></th>
+</tr>
+<tr class="gt_col_headings gt_spanner_row header">
+<th rowspan="2" id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th rowspan="2" id="n" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">n<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th colspan="2" id="Adjusted" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Adjusted
+</div></th>
+<th rowspan="2" id="ratio" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Ratio (T/R, %)</th>
+<th rowspan="2" id="gse" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gSE</th>
+<th colspan="2" id="ci_spanner" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+90% Confidence Interval
+</div></th>
+<th rowspan="2" id="gCV" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gCV (%)<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span></th>
+</tr>
+<tr class="gt_col_headings even">
+<th id="adj_gmean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gMean</th>
+<th id="adj_gse" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gSE</th>
+<th id="lower" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Lower (%)</th>
+<th id="upper" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Upper (%)</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="gt_group_heading_row odd">
+<td colspan="9" id="Primary endpoints" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup">Primary endpoints</td>
+</tr>
+<tr class="gt_row_group_first even">
+<td id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">AUC0_tz</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 n"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 adj_gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 gCV"></td>
+</tr>
+<tr class="odd">
+<td id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 n">16</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 adj_gmean">496.58</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 adj_gse">1.02</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 ratio">90.01</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 gse">1.03</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 lower">85.23</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 upper">95.07</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 gCV">8.8</td>
+</tr>
+<tr class="even">
+<td id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 n">16</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 adj_gmean">446.99</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 adj_gse">1.02</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 gCV"></td>
+</tr>
+<tr class="odd">
+<td id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Cmax</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 n"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 adj_gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 gCV"></td>
+</tr>
+<tr class="even">
+<td id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 n">16</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 adj_gmean">173.06</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 adj_gse">1.04</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 ratio">97.24</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 gse">1.06</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 lower">87.65</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 upper">107.87</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 gCV">16.8</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 n">16</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 adj_gmean">168.27</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 adj_gse">1.04</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 gCV"></td>
+</tr>
+<tr class="gt_group_heading_row even">
+<td colspan="9" id="Secondary endpoint" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup">Secondary endpoint</td>
+</tr>
+<tr class="gt_row_group_first odd">
+<td id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">AUCINF_pred</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 n"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 adj_gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 ratio"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 lower"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 upper"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 gCV"></td>
+</tr>
+<tr class="even">
+<td id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 n">16</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 adj_gmean">502.05</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 adj_gse">1.03</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 ratio">87.92</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 gse">1.05</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 lower">81.06</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 upper">95.38</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 gCV">13.1</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_9" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 n">16</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 adj_gmean">441.43</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 adj_gse">1.03</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 ratio"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 lower"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 upper"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 gCV"></td>
+</tr>
+</tbody><tfoot>
+<tr class="gt_footnotes odd">
+<td colspan="9" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> n = number of observations included in the analysis of each treatment</td>
+</tr>
+<tr class="gt_footnotes even">
+<td colspan="9" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span> intra-individual gCV</td>
+</tr>
+<tr class="gt_sourcenotes odd">
+<td colspan="9" class="gt_sourcenote">February 05, 2026</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</figure>
+</div>
+<div id="fig-forest_fe" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-forest_fe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="crossover_case_study_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-forest_fe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: gMean ratio with 90% CI of T vs R, using a fixed-effects model and a balanced dataset.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="sec-sas-pipeline" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> SAS analysis pipeline</h1>
+<p>To enable a direct comparison between R and SAS implementations, the crossover analysis was replicated in SAS using a modular, macro-based workflow. The structure of the <code>SAS/</code> directory mirrors that of the <code>R/</code> folder, with subdirectories corresponding to each study design (<code>crossover/</code>, <code>fixed_sequence/</code>, and <code>parallel_group/</code>) and a <code>common/</code> directory containing shared utilities for table assembly and reporting.</p>
+<p>While functions are provided for all three designs, a complete end-to-end pipeline is implemented for the crossover case study. This pipeline is orchestrated by the script:</p>
+<p><code>SAS/crossover/example/run_crossover.sas</code></p>
+<p>which reproduces the full analysis performed in R, including model fitting, extraction of treatment contrasts, back-transformation to the original scale, and construction of regulatory-style tables.</p>
+<p>The SAS workflow proceeds through the following pipeline.</p>
+<p><strong>1. Data import</strong></p>
+<p>Balanced and unbalanced crossover datasets generated in R are imported from CSV files into SAS libraries using <code>PROC IMPORT</code>.</p>
+<p><strong>2. Model fitting</strong></p>
+<p>Relative bioavailability models are fitted using <code>PROC MIXED</code> through a parameterized macro <span class="citation" data-cites="SAS2013mixed">[<a href="#ref-SAS2013mixed" role="doc-biblioref">6</a>]</span>. Both fixed-effects and mixed-effects formulations are supported, differing only in whether subject-within-sequence is included as a fixed effect or as a random effect. Least-squares means and treatment contrasts are obtained with 90% confidence intervals using Kenward–Roger degrees of freedom <span class="citation" data-cites="kenward1997">[<a href="#ref-kenward1997" role="doc-biblioref">7</a>]</span>.</p>
+<p><strong>3. Batch execution</strong></p>
+<p>A wrapper macro runs all four combinations of interest:</p>
+<ul>
+<li>balanced / fixed-effects</li>
+<li>balanced / mixed-effects</li>
+<li>unbalanced / fixed-effects</li>
+<li>unbalanced / mixed-effects</li>
+</ul>
+<p>and stores the intermediate results in standardized output tables.</p>
+<p><strong>4. Post-processing and back-transformation</strong></p>
+<p>Additional macros compute sample sizes per treatment group, merge model outputs, and perform all back-transformations from the log scale to the original scale, including geometric means, ratios, confidence limits, and geometric coefficients of variation.</p>
+<p><strong>5. Reporting</strong></p>
+<p>Finally, formatted regulatory-style tables are produced using <code>PROC REPORT</code>, with titles and column labels automatically adapted to the model formulation and dataset structure. Temporary intermediate datasets are removed at the end of the pipeline to maintain a clean working environment.</p>
+<p>All macros used in this workflow are documented in the headers of the corresponding SAS scripts within the repository, and are organized in the <code>SAS/common/</code> and <code>SAS/crossover/</code> directories for transparency and reuse.</p>
+</section>
+<section id="sec-comparison" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Comparison with SAS outputs</h1>
+<p>Results for balanced designs and for fixed-effects models applied to the unbalanced dataset were numerically identical between R and SAS and are provided in Appendix B.</p>
+<p>The only discrepancies observed across platforms occurred for the mixed-effects model fitted to the unbalanced dataset, where small differences in the Kenward–Roger (KR) degrees of freedom led to slightly different confidence intervals for the treatment comparisons. Estimated geometric means and T/R ratios were identical, but the lower and upper confidence limits differed at the fourth decimal place (or second decimal place, if percentages are considered).</p>
+<p>A side-by-side comparison of the final regulatory-style tables produced by SAS and R is shown in <a href="#fig-sas-r-4" class="quarto-xref">Figure&nbsp;2</a> and the only differences are in the confidence intervals of the geometric mean ratios:</p>
+<ul>
+<li><span class="math inline">\(AUC_{0-tz}\)</span>: <strong>84.51% - 95.89%</strong> in SAS and <strong>84.50% - 95.89%</strong> in R</li>
+<li><span class="math inline">\(C_\text{max}\)</span>: <strong>85.66% - 107.69%</strong> in SAS and <strong>85.65% - 107.71%</strong> in R</li>
+<li><span class="math inline">\(AUC_{0-\infty}\)</span>: <strong>80.84% - 98.13%</strong> in SAS and <strong>80.89% - 98.06%</strong> in R</li>
+</ul>
+<p>These differences are attributable to platform-specific implementations of the Kenward–Roger approximation for degrees of freedom. In additional investigations (not shown), analyses performed using the Satterthwaite method produced complete agreement between R and SAS, supporting the conclusion that the discrepancy arises from the KR algorithm rather than from back-transformation procedures or data handling.</p>
+<p>The effect was only observed in the presence of incomplete data, where some subjects contributed observations from a single period. When the same models were fitted to fully balanced datasets, or when such subjects were excluded, R and SAS yielded identical results for both fixed- and mixed-effects models.</p>
+<p>From a regulatory perspective, the magnitude of these differences is negligible and usually does not alter bioavailability conclusions. Nonetheless, the findings highlight that minor numerical discrepancies may occur across software platforms when applying Kenward–Roger adjustments in mixed-effects models with unbalanced data, and such behavior should be acknowledged when comparing R-based pipelines against SAS workflows.</p>
+<div id="fig-sas-r-4" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sas-r-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-sas-r-4" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-sas4" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-sas4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/SAS/tables/table_me_un_sas.png" id="fig-sas4" class="img-fluid figure-img" data-ref-parent="fig-sas-r-4">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-sas4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-sas-r-4" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-r4" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-r4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/R/tables/table_me_un_r.png" id="fig-r4" class="img-fluid figure-img" data-ref-parent="fig-sas-r-4">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-r4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sas-r-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Relative bioavailability assessment of T vs R, using a mixed-effects model and an unbalanced dataset: SAS (a) and R (b).
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="sec-discussion" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Discussion and conclusions</h1>
+<section id="summary-of-objectives" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="summary-of-objectives"><span class="header-section-number">8.1</span> Summary of objectives</h2>
+<p>The primary objective of this project was to evaluate whether analyses of relative bioavailability performed in R can reproduce the SAS outputs typically used for regulatory submissions.</p>
+<p>To this end, the project aimed to:</p>
+<ul>
+<li>Demonstrate how fixed- and mixed-effects ANOVA models for relative bioavailability can be implemented in R.</li>
+<li>Show that R-based analyses can reproduce SAS results under standard regulatory scenarios.</li>
+<li>Simulate and validate datasets to support reproducible method development.</li>
+<li>Develop automated pipelines capable of producing regulatory-style tables and figures.</li>
+<li>Investigate and document the origin of any numerical discrepancies between software platforms.</li>
+</ul>
+<p>Together, these objectives were intended both to provide a rigorous technical comparison and to deliver a practical, reproducible framework for conducting regulatory-grade analyses in R.</p>
+</section>
+<section id="key-findings" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="key-findings"><span class="header-section-number">8.2</span> Key findings</h2>
+<p>Across crossover designs with balanced data, R reproduced SAS results exactly in terms of parameter estimates, confidence intervals, and regulatory conclusions.</p>
+<p>Custom R functions developed in this repository can be applied to each study design just by changing the parameters.</p>
+<p>Simulation of a 2×2 crossover dataset provided a controlled setting for method development and software comparison, ensuring that any observed discrepancies could be attributed to software implementation rather than data artifacts.</p>
+</section>
+<section id="limitations-and-observed-discrepancies" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="limitations-and-observed-discrepancies"><span class="header-section-number">8.3</span> Limitations and observed discrepancies</h2>
+<p>While controlled examples showed perfect agreement, small but systematic differences emerged in mixed-effects models applied to unbalanced datasets.</p>
+<p>These discrepancies were driven solely by differences in Kenward–Roger degrees of freedom, leading to confidence limits that differed in the fourth decimal place. Parameter estimates and treatment ratios remained identical.</p>
+<p>R’s open-source implementation makes the relevant numerical procedures transparent <span class="citation" data-cites="rmmrmKR">[<a href="#ref-rmmrmKR" role="doc-biblioref">8</a>]</span>, whereas SAS provides only high-level documentation of its KR algorithm <span class="citation" data-cites="sasKR">[<a href="#ref-sasKR" role="doc-biblioref">9</a>]</span>. Consequently, perfect numerical alignment cannot always be guaranteed when unbalanced data are present.</p>
+</section>
+<section id="conclusions-and-outlook" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="conclusions-and-outlook"><span class="header-section-number">8.4</span> Conclusions and outlook</h2>
+<p>This work demonstrates that R can reliably reproduce SAS results for relative bioavailability analyses in phase 1 settings. Fixed-effects models are numerically identical across platforms, and mixed-effects models agree fully for balanced datasets. Minor discrepancies may arise for unbalanced data, but these are negligible from a regulatory perspective and do not undermine the validity of R-based analyses.</p>
+<p>Beyond relative bioavailability, extending these comparisons to additional pharmacokinetic endpoints and trial designs would further strengthen confidence in R for regulatory use.</p>
+<p>From a practical standpoint, the R functions developed here could be consolidated into standardized pipelines or internal packages, facilitating wider adoption in pharmaceutical environments.</p>
+<p>Continued investigation of unbalanced datasets remains warranted, as these are the scenarios most likely to expose implementation differences in Kenward–Roger adjustments. Clear documentation of such effects is essential when validating R workflows against established SAS pipelines.</p>
+<p>Overall, this project provides a reproducible foundation for evaluating and deploying R-based pharmacokinetic analyses alongside traditional SAS workflows.</p>
+</section>
+</section>
+<section id="reproducibility" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Reproducibility</h1>
+<p>This repository is designed to provide a fully reproducible workflow for comparing R- and SAS-based analyses of relative bioavailability in Phase 1 clinical trials. All figures, tables, and results reported in this document were generated programmatically using R and Quarto, with SAS outputs produced independently for benchmarking purposes.</p>
+<section id="software-environment" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="software-environment"><span class="header-section-number">9.1</span> Software environment</h2>
+<p>The analyses were conducted using the following software versions:</p>
+<ul>
+<li><strong>R</strong> version 4.5.2</li>
+<li><strong>Quarto</strong> version 1.7.33</li>
+<li><strong>SAS</strong> version 9.4 (TS1M7)<span class="citation" data-cites="SAS2013">[<a href="#ref-SAS2013" role="doc-biblioref">10</a>]</span></li>
+</ul>
+<p>Key R packages include <span class="citation" data-cites="dplyr emmeans ggplot2 gt lme4 pbkrtest purrr tidyr">[<a href="#ref-dplyr" role="doc-biblioref">11</a>–<a href="#ref-tidyr" role="doc-biblioref">18</a>]</span>:</p>
+<ul>
+<li><code>dplyr</code> (v1.1.4)</li>
+<li><code>emmeans</code> (v1.9.0)</li>
+<li><code>ggplot2</code> (v3.5.2)</li>
+<li><code>gt</code> (v0.10.0)</li>
+<li><code>lme4</code> (v1.1-35.1)</li>
+<li><code>pbkrtest</code> (v0.5.4)</li>
+<li><code>purrr</code> (v1.0.2)</li>
+<li><code>tidyr</code> (v1.3.0)</li>
+</ul>
+<p>Package versions are controlled using the <code>renv</code> framework. The file <code>renv.lock</code> records the exact R package versions used to generate the results. Users can recreate the environment by running <code>renv::restore()</code> after cloning the repository.</p>
+<p>SAS programs were executed independently in a local SAS environment and are provided in the repository for transparency and comparison.</p>
+</section>
+<section id="repository-structure" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="repository-structure"><span class="header-section-number">9.2</span> Repository structure</h2>
+<p>The main directories of the project are:</p>
+<ul>
+<li><code>data/</code>: simulated datasets and functions used to generate them across designs.</li>
+<li><code>R/</code>: model-fitting functions and analysis pipelines.</li>
+<li><code>output/</code>: files for the crossover report and images used to render it.</li>
+<li><code>SAS/</code>: SAS macros and scripts used to run the comparison analyses.</li>
+</ul>
+</section>
+<section id="reproducing-the-r-analyses" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="reproducing-the-r-analyses"><span class="header-section-number">9.3</span> Reproducing the R analyses</h2>
+<p>To reproduce the full analysis:</p>
+<ol type="1">
+<li>Clone the project repository.</li>
+<li>Open the project in RStudio by double-clicking the <code>.Rproj</code> file.</li>
+<li>Install the required R packages. If using <code>renv</code>, restore the environment with:</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="4" type="1">
+<li>Render the Quarto document from the project root:</li>
+</ol>
+<pre><code>quarto render output/crossover/crossover_case_study.qmd</code></pre>
+<p>The rendered HTML report will be in the same folder. Outputs from R are stored under <code>output/crossover/images/R/</code>.</p>
+<p>Model-fitting functions are sourced automatically from the <code>R/</code> directory during rendering.</p>
+</section>
+<section id="reproducing-the-sas-analyses" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="reproducing-the-sas-analyses"><span class="header-section-number">9.4</span> Reproducing the SAS analyses</h2>
+<p>SAS programs used for the comparison analyses are located in the <code>SAS/</code> directory and were executed using SAS version 9.4 (TS1M7) on a local installation. The primary script for reproducing the crossover analyses is <code>SAS/crossover/example/run_crossover.sas</code>.</p>
+<p>Outputs from SAS are stored under <code>output/crossover/images/SAS/</code>.</p>
+</section>
+<section id="notes-on-platform-differences" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="notes-on-platform-differences"><span class="header-section-number">9.5</span> Notes on platform differences</h2>
+<p>Minor numerical discrepancies between R and SAS may arise in mixed-effects models applied to unbalanced datasets due to differences in the implementation of the Kenward–Roger degrees-of-freedom approximation. These are documented in the <a href="#sec-comparison" class="quarto-xref">Section&nbsp;7</a> and <a href="#sec-discussion" class="quarto-xref">Section&nbsp;8</a> chapters and should be considered when comparing R-based pipelines against SAS workflows.</p>
+</section>
+</section>
+<section id="references" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> References</h1>
+<div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-EMA2010" class="csl-entry" role="listitem">
+<div class="csl-left-margin">1. </div><div class="csl-right-inline">Agency EM. Guideline on the investigation of bioequivalence [Internet]. London, UK: European Medicines Agency; 2010. Available from: <a href="https://www.ema.europa.eu/en/documents/scientific-guideline/guideline-investigation-bioequivalence-rev1_en.pdf">https://www.ema.europa.eu/en/documents/scientific-guideline/guideline-investigation-bioequivalence-rev1_en.pdf</a></div>
+</div>
+<div id="ref-FDA2002" class="csl-entry" role="listitem">
+<div class="csl-left-margin">2. </div><div class="csl-right-inline">Food US, Administration D. Guidance for industry: Bioavailability and bioequivalence studies for orally administered drug products — general considerations [Internet]. 2002. Available from: <a href="https://www.fda.gov/media/70858/download">https://www.fda.gov/media/70858/download</a></div>
+</div>
+<div id="ref-FDA2001" class="csl-entry" role="listitem">
+<div class="csl-left-margin">3. </div><div class="csl-right-inline">Food US, Administration D. Guidance for industry: Statistical approaches to establishing bioequivalence [Internet]. U.S. Food; Drug Administration; 2001. Available from: <a href="https://www.fda.gov/media/70958/download">https://www.fda.gov/media/70958/download</a></div>
+</div>
+<div id="ref-ema2024m13a" class="csl-entry" role="listitem">
+<div class="csl-left-margin">4. </div><div class="csl-right-inline">Agency EM. ICH M13A guideline on bioequivalence for immediate-release solid oral dosage forms [Internet]. European Medicines Agency; 2024. Available from: <a href="https://www.ema.europa.eu/en/documents/scientific-guideline/ich-m13a-guideline-bioequivalence-immediaterelease-solid-oral-dosage-forms-step-5_en.pdf">https://www.ema.europa.eu/en/documents/scientific-guideline/ich-m13a-guideline-bioequivalence-immediaterelease-solid-oral-dosage-forms-step-5_en.pdf</a></div>
+</div>
+<div id="ref-sas_varcomp" class="csl-entry" role="listitem">
+<div class="csl-left-margin">5. </div><div class="csl-right-inline">Inc. SI. SAS/STAT® 14.3 user’s guide: The VARCOMP procedure [Internet]. Cary, NC: SAS Institute Inc.; 2017. Available from: <a href="https://documentation.sas.com/doc/en/statug/14.3/statug_varcomp_overview.htm">https://documentation.sas.com/doc/en/statug/14.3/statug_varcomp_overview.htm</a></div>
+</div>
+<div id="ref-SAS2013mixed" class="csl-entry" role="listitem">
+<div class="csl-left-margin">6. </div><div class="csl-right-inline">Inc. SI. SAS/STAT 13.1 user’s guide: The MIXED procedure. Cary, NC: SAS Institute Inc.; 2013. </div>
+</div>
+<div id="ref-kenward1997" class="csl-entry" role="listitem">
+<div class="csl-left-margin">7. </div><div class="csl-right-inline">Kenward MG, Roger JH. <a href="https://doi.org/10.2307/2533558">Small sample inference for fixed effects from restricted maximum likelihood</a>. Biometrics. 1997;53[3]:983–97. </div>
+</div>
+<div id="ref-rmmrmKR" class="csl-entry" role="listitem">
+<div class="csl-left-margin">8. </div><div class="csl-right-inline">Team RC, authors {mmrm}. Kenward-roger degrees of freedom in {mmrm} [Internet]. 2023. Available from: <a href="https://cran.r-project.org/web/packages/mmrm/vignettes/kenward.html">https://cran.r-project.org/web/packages/mmrm/vignettes/kenward.html</a></div>
+</div>
+<div id="ref-sasKR" class="csl-entry" role="listitem">
+<div class="csl-left-margin">9. </div><div class="csl-right-inline">Inc. SI. Kenward-roger degrees of freedom approximation [Internet]. 2020. Available from: <a href="https://documentation.sas.com/doc/en/statug/15.3/statug_glimmix_details40.htm">https://documentation.sas.com/doc/en/statug/15.3/statug_glimmix_details40.htm</a></div>
+</div>
+<div id="ref-SAS2013" class="csl-entry" role="listitem">
+<div class="csl-left-margin">10. </div><div class="csl-right-inline">Inc. SI. SAS/STAT 13.1 user’s guide. Cary, NC: SAS Institute Inc.; 2013. </div>
+</div>
+<div id="ref-dplyr" class="csl-entry" role="listitem">
+<div class="csl-left-margin">11. </div><div class="csl-right-inline">Wickham H, François R, Henry L, Müller K, Vaughan D. Dplyr: A grammar of data manipulation [Internet]. 2023. Available from: <a href="https://dplyr.tidyverse.org">https://dplyr.tidyverse.org</a></div>
+</div>
+<div id="ref-emmeans" class="csl-entry" role="listitem">
+<div class="csl-left-margin">12. </div><div class="csl-right-inline">Lenth RV. Emmeans: Estimated marginal means, aka least-squares means [Internet]. 2023. Available from: <a href="https://github.com/rvlenth/emmeans">https://github.com/rvlenth/emmeans</a></div>
+</div>
+<div id="ref-ggplot2" class="csl-entry" role="listitem">
+<div class="csl-left-margin">13. </div><div class="csl-right-inline">Wickham H. ggplot2: Create elegant data visualisations using the grammar of graphics [Internet]. 2023. Available from: <a href="https://ggplot2.tidyverse.org">https://ggplot2.tidyverse.org</a></div>
+</div>
+<div id="ref-gt" class="csl-entry" role="listitem">
+<div class="csl-left-margin">14. </div><div class="csl-right-inline">Iannone R, Cheng J, Schloerke B, Hughes E, Lauer A, Seo J. Gt: Easily create presentation-ready display tables [Internet]. 2023. Available from: <a href="https://gt.rstudio.com">https://gt.rstudio.com</a></div>
+</div>
+<div id="ref-lme4" class="csl-entry" role="listitem">
+<div class="csl-left-margin">15. </div><div class="csl-right-inline">Bates D, Mächler M, Bolker B, Walker S. <a href="https://doi.org/10.18637/jss.v067.i01">Fitting linear mixed-effects models using <span class="nocase">lme4</span></a>. Journal of Statistical Software. 2015;67[1]:1–48. </div>
+</div>
+<div id="ref-pbkrtest" class="csl-entry" role="listitem">
+<div class="csl-left-margin">16. </div><div class="csl-right-inline">Christensen RHB. Pbkrtest: Parametric bootstrap and kenward-roger based methods for mixed model comparison [Internet]. 2022. Available from: <a href="https://cran.r-project.org/package=pbkrtest">https://cran.r-project.org/package=pbkrtest</a></div>
+</div>
+<div id="ref-purrr" class="csl-entry" role="listitem">
+<div class="csl-left-margin">17. </div><div class="csl-right-inline">Wickham H, Henry L. Purrr: Functional programming tools [Internet]. 2023. Available from: <a href="https://purrr.tidyverse.org/">https://purrr.tidyverse.org/</a></div>
+</div>
+<div id="ref-tidyr" class="csl-entry" role="listitem">
+<div class="csl-left-margin">18. </div><div class="csl-right-inline">Wickham H, Vaughan D, Girlich M. Tidyr: Tidy messy data [Internet]. 2023. Available from: <a href="https://tidyr.tidyverse.org">https://tidyr.tidyverse.org</a></div>
+</div>
+</div>
+</section>
+<section id="appendix-a---model-validation" class="level1 unnumbered">
+<h1 class="unnumbered">Appendix A - Model validation</h1>
+<p>To ensure that the simulated crossover datasets were suitable for both fixed-effects and mixed-effects analyses, standard model diagnostics were performed on each pharmacokinetic parameter. For crossover designs, model validation focused on two key assumptions:</p>
+<ul>
+<li><p>Normality of residuals, assessed using Q–Q plots.</p></li>
+<li><p>Homoscedasticity, assessed by plotting residuals versus fitted values.</p></li>
+</ul>
+<p>These checks were conducted separately for:</p>
+<ul>
+<li><p>balanced and unbalanced datasets, and</p></li>
+<li><p>fixed-effects and mixed-effects model specifications.</p></li>
+</ul>
+<p>All validation routines were implemented in a dedicated script within the repository:</p>
+<p><code>data/crossover/validate_crossover.R</code></p>
+<p>This script contains reusable functions that automate model fitting and residual diagnostics for each PK parameter.</p>
+<p>The code below illustrates how validation was performed for all combinations of dataset type and model specification. Because these commands generate a large number of diagnostic plots, they are shown here for reproducibility but were not executed during document rendering.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../../data/crossover/validate_crossover.R"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">validate_all_cr</span>(res, <span class="at">dataset =</span> <span class="st">"balanced"</span>,   <span class="at">model_type =</span> <span class="st">"fixed"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">validate_all_cr</span>(res, <span class="at">dataset =</span> <span class="st">"balanced"</span>,   <span class="at">model_type =</span> <span class="st">"mixed"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">validate_all_cr</span>(res, <span class="at">dataset =</span> <span class="st">"unbalanced"</span>, <span class="at">model_type =</span> <span class="st">"fixed"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">validate_all_cr</span>(res, <span class="at">dataset =</span> <span class="st">"unbalanced"</span>, <span class="at">model_type =</span> <span class="st">"mixed"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="appendix-b---interpretation-of-other-results" class="level1 unnumbered">
+<h1 class="unnumbered">Appendix B - Interpretation of other results</h1>
+<section id="balanced-dataset" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="balanced-dataset">Balanced dataset</h2>
+<p>As shown in <a href="#tbl-gt_table_me" class="quarto-xref">Table&nbsp;2</a> and <a href="#fig-forest_me" class="quarto-xref">Figure&nbsp;3</a>, the relative bioavailability results obtained using a mixed-effects model for the balanced dataset are identical to those derived under the fixed-effects model; consequently, the regulatory interpretation is unchanged. Detailed discussion is therefore not repeated here, and readers are referred to <a href="#sec-results" class="quarto-xref">Section&nbsp;5</a>.</p>
+<p>The agreement between the fixed- and mixed-effects models is expected. In balanced crossover designs, modeling subject as a fixed or random effect typically yields the same treatment effect estimates. The key distinction lies in how subject-level variability is treated: as a fixed factor in the fixed-effects model, and as a random component in the mixed-effects model. Despite these structural differences, the resulting geometric means, ratios, and confidence intervals remain consistent <span class="citation" data-cites="FDA2001">[<a href="#ref-FDA2001" role="doc-biblioref">3</a>]</span>.</p>
+<p><strong>Mixed-effects model</strong></p>
+<div id="tbl-gt_table_me" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-gt_table_me-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Relative bioavailability assessment of T vs R, using a mixed-effects model and a balanced dataset.
+</figcaption>
+<div aria-describedby="tbl-gt_table_me-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<div id="faoethkgyp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#faoethkgyp table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#faoethkgyp thead, #faoethkgyp tbody, #faoethkgyp tfoot, #faoethkgyp tr, #faoethkgyp td, #faoethkgyp th {
+  border-style: none;
+}
+
+#faoethkgyp p {
+  margin: 0;
+  padding: 0;
+}
+
+#faoethkgyp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#faoethkgyp .gt_title {
+  color: #333333;
+  font-size: 16px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#faoethkgyp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#faoethkgyp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#faoethkgyp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#faoethkgyp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#faoethkgyp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#faoethkgyp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#faoethkgyp .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#faoethkgyp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#faoethkgyp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#faoethkgyp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#faoethkgyp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#faoethkgyp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#faoethkgyp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#faoethkgyp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#faoethkgyp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#faoethkgyp .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#faoethkgyp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#faoethkgyp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#faoethkgyp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#faoethkgyp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#faoethkgyp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#faoethkgyp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#faoethkgyp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#faoethkgyp .gt_left {
+  text-align: left;
+}
+
+#faoethkgyp .gt_center {
+  text-align: center;
+}
+
+#faoethkgyp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#faoethkgyp .gt_font_normal {
+  font-weight: normal;
+}
+
+#faoethkgyp .gt_font_bold {
+  font-weight: bold;
+}
+
+#faoethkgyp .gt_font_italic {
+  font-style: italic;
+}
+
+#faoethkgyp .gt_super {
+  font-size: 65%;
+}
+
+#faoethkgyp .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#faoethkgyp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#faoethkgyp .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#faoethkgyp .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#faoethkgyp .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#faoethkgyp .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#faoethkgyp .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#faoethkgyp .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#faoethkgyp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="gt_heading header">
+<th colspan="9" class="gt_heading gt_title gt_font_normal gt_bottom_border">Adjusted geometric means and relative bioavailability of treatment (T) vs reference (R) with subject as random effect - balanced dataset</th>
+</tr>
+<tr class="gt_col_headings gt_spanner_row even">
+<th data-quarto-table-cell-role="th" scope="col"></th>
+<th colspan="3" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"></th>
+<th colspan="5" id="Comparison vs reference (R)" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Comparison vs reference (R)
+</div></th>
+</tr>
+<tr class="gt_col_headings gt_spanner_row header">
+<th rowspan="2" id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th rowspan="2" id="n" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">n<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th colspan="2" id="Adjusted" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Adjusted
+</div></th>
+<th rowspan="2" id="ratio" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Ratio (T/R, %)</th>
+<th rowspan="2" id="gse" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gSE</th>
+<th colspan="2" id="ci_spanner" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+90% Confidence Interval
+</div></th>
+<th rowspan="2" id="gCV" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gCV (%)<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span></th>
+</tr>
+<tr class="gt_col_headings even">
+<th id="adj_gmean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gMean</th>
+<th id="adj_gse" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gSE</th>
+<th id="lower" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Lower (%)</th>
+<th id="upper" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Upper (%)</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="gt_group_heading_row odd">
+<td colspan="9" id="Primary endpoints" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup">Primary endpoints</td>
+</tr>
+<tr class="gt_row_group_first even">
+<td id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">AUC0_tz</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 n"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 adj_gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 gCV"></td>
+</tr>
+<tr class="odd">
+<td id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 n">16</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 adj_gmean">496.58</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 adj_gse">1.09</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 ratio">90.01</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 gse">1.03</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 lower">85.23</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 upper">95.07</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 gCV">8.8</td>
+</tr>
+<tr class="even">
+<td id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 n">16</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 adj_gmean">446.99</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 adj_gse">1.09</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 gCV"></td>
+</tr>
+<tr class="odd">
+<td id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Cmax</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 n"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 adj_gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 gCV"></td>
+</tr>
+<tr class="even">
+<td id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 n">16</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 adj_gmean">173.06</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 adj_gse">1.05</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 ratio">97.24</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 gse">1.06</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 lower">87.65</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 upper">107.87</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 gCV">16.8</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 n">16</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 adj_gmean">168.27</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 adj_gse">1.05</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 gCV"></td>
+</tr>
+<tr class="gt_group_heading_row even">
+<td colspan="9" id="Secondary endpoint" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup">Secondary endpoint</td>
+</tr>
+<tr class="gt_row_group_first odd">
+<td id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">AUCINF_pred</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 n"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 adj_gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 ratio"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 lower"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 upper"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 gCV"></td>
+</tr>
+<tr class="even">
+<td id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 n">16</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 adj_gmean">502.05</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 adj_gse">1.07</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 ratio">87.92</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 gse">1.05</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 lower">81.06</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 upper">95.38</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 gCV">13.1</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_9" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 n">16</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 adj_gmean">441.43</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 adj_gse">1.07</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 ratio"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 lower"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 upper"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 gCV"></td>
+</tr>
+</tbody><tfoot>
+<tr class="gt_footnotes odd">
+<td colspan="9" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> n = number of observations included in the analysis of each treatment</td>
+</tr>
+<tr class="gt_footnotes even">
+<td colspan="9" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span> intra-individual gCV</td>
+</tr>
+<tr class="gt_sourcenotes odd">
+<td colspan="9" class="gt_sourcenote">February 05, 2026</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</figure>
+</div>
+<div id="fig-forest_me" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-forest_me-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="crossover_case_study_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-forest_me-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: gMean ratio with 90% CI of T vs R, using a mixed-effects model and a balanced dataset.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="unbalanced-dataset" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="unbalanced-dataset">Unbalanced dataset</h2>
+<p>In contrast to the balanced scenario, the unbalanced dataset leads to small but noticeable differences between the fixed- and mixed-effects model results (<a href="#tbl-gt_table_fe_un" class="quarto-xref">Table&nbsp;3</a>, <a href="#tbl-gt_table_me_un" class="quarto-xref">Table&nbsp;4</a>; <a href="#fig-forest_fe_un" class="quarto-xref">Figure&nbsp;4</a>, <a href="#fig-forest_me_un" class="quarto-xref">Figure&nbsp;5</a>). These differences arise because, when data are incomplete, the two modeling approaches no longer yield identical estimates.</p>
+<p>Under the fixed-effects analysis, the lower bound of the 90% confidence interval for <span class="math inline">\(AUC_{0-\infty}\)</span> is slightly below the conventional 80% bioequivalence limit (79.88%), whereas the mixed-effects model yields a corresponding lower bound above 80% (80.89%). Although the numerical difference is small, it illustrates how model choice in the presence of missing observations can influence regulatory-relevant conclusions when estimates lie near decision boundaries.</p>
+<p><strong>Fixed-effects model</strong></p>
+<div id="tbl-gt_table_fe_un" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-gt_table_fe_un-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Relative bioavailability assessment of T vs R, using a fixed-effects model and an unbalanced dataset.
+</figcaption>
+<div aria-describedby="tbl-gt_table_fe_un-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<div id="yffwditmwt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yffwditmwt table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#yffwditmwt thead, #yffwditmwt tbody, #yffwditmwt tfoot, #yffwditmwt tr, #yffwditmwt td, #yffwditmwt th {
+  border-style: none;
+}
+
+#yffwditmwt p {
+  margin: 0;
+  padding: 0;
+}
+
+#yffwditmwt .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#yffwditmwt .gt_title {
+  color: #333333;
+  font-size: 16px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#yffwditmwt .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#yffwditmwt .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#yffwditmwt .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#yffwditmwt .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#yffwditmwt .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#yffwditmwt .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#yffwditmwt .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#yffwditmwt .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#yffwditmwt .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#yffwditmwt .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#yffwditmwt .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#yffwditmwt .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#yffwditmwt .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yffwditmwt .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#yffwditmwt .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#yffwditmwt .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#yffwditmwt .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yffwditmwt .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#yffwditmwt .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yffwditmwt .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#yffwditmwt .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yffwditmwt .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#yffwditmwt .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yffwditmwt .gt_left {
+  text-align: left;
+}
+
+#yffwditmwt .gt_center {
+  text-align: center;
+}
+
+#yffwditmwt .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#yffwditmwt .gt_font_normal {
+  font-weight: normal;
+}
+
+#yffwditmwt .gt_font_bold {
+  font-weight: bold;
+}
+
+#yffwditmwt .gt_font_italic {
+  font-style: italic;
+}
+
+#yffwditmwt .gt_super {
+  font-size: 65%;
+}
+
+#yffwditmwt .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#yffwditmwt .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#yffwditmwt .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#yffwditmwt .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#yffwditmwt .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#yffwditmwt .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#yffwditmwt .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#yffwditmwt .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#yffwditmwt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="gt_heading header">
+<th colspan="9" class="gt_heading gt_title gt_font_normal gt_bottom_border">Adjusted geometric means and relative bioavailability of treatment (T) vs reference (R) with subject as fixed effect - unbalanced dataset</th>
+</tr>
+<tr class="gt_col_headings gt_spanner_row even">
+<th data-quarto-table-cell-role="th" scope="col"></th>
+<th colspan="3" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"></th>
+<th colspan="5" id="Comparison vs reference (R)" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Comparison vs reference (R)
+</div></th>
+</tr>
+<tr class="gt_col_headings gt_spanner_row header">
+<th rowspan="2" id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th rowspan="2" id="n" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">n<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th colspan="2" id="Adjusted" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Adjusted
+</div></th>
+<th rowspan="2" id="ratio" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Ratio (T/R, %)</th>
+<th rowspan="2" id="gse" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gSE</th>
+<th colspan="2" id="ci_spanner" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+90% Confidence Interval
+</div></th>
+<th rowspan="2" id="gCV" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gCV (%)<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span></th>
+</tr>
+<tr class="gt_col_headings even">
+<th id="adj_gmean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gMean</th>
+<th id="adj_gse" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gSE</th>
+<th id="lower" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Lower (%)</th>
+<th id="upper" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Upper (%)</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="gt_group_heading_row odd">
+<td colspan="9" id="Primary endpoints" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup">Primary endpoints</td>
+</tr>
+<tr class="gt_row_group_first even">
+<td id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">AUC0_tz</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 n"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 adj_gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 gCV"></td>
+</tr>
+<tr class="odd">
+<td id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 n">15</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 adj_gmean">497.82</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 adj_gse">1.03</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 ratio">89.98</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 gse">1.04</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 lower">84.44</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 upper">95.88</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 gCV">9.4</td>
+</tr>
+<tr class="even">
+<td id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 n">15</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 adj_gmean">447.93</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 adj_gse">1.03</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 gCV"></td>
+</tr>
+<tr class="odd">
+<td id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Cmax</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 n"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 adj_gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 gCV"></td>
+</tr>
+<tr class="even">
+<td id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 n">15</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 adj_gmean">175.06</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 adj_gse">1.05</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 ratio">95.56</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 gse">1.07</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 lower">84.89</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 upper">107.56</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 gCV">17.7</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 n">15</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 adj_gmean">167.29</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 adj_gse">1.05</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 gCV"></td>
+</tr>
+<tr class="gt_group_heading_row even">
+<td colspan="9" id="Secondary endpoint" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup">Secondary endpoint</td>
+</tr>
+<tr class="gt_row_group_first odd">
+<td id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">AUCINF_pred</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 n"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 adj_gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 ratio"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 lower"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 upper"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 gCV"></td>
+</tr>
+<tr class="even">
+<td id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 n">15</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 adj_gmean">502.44</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 adj_gse">1.04</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 ratio">87.85</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 gse">1.05</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 lower">79.88</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 upper">96.61</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 gCV">14.2</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_9" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 n">15</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 adj_gmean">441.39</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 adj_gse">1.04</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 ratio"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 lower"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 upper"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 gCV"></td>
+</tr>
+</tbody><tfoot>
+<tr class="gt_footnotes odd">
+<td colspan="9" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> n = number of observations included in the analysis of each treatment</td>
+</tr>
+<tr class="gt_footnotes even">
+<td colspan="9" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span> intra-individual gCV</td>
+</tr>
+<tr class="gt_sourcenotes odd">
+<td colspan="9" class="gt_sourcenote">February 05, 2026</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</figure>
+</div>
+<div id="fig-forest_fe_un" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-forest_fe_un-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="crossover_case_study_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-forest_fe_un-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: gMean ratio with 90% CI of T vs R, using a fixed-effects model and an unbalanced dataset.
+</figcaption>
+</figure>
+</div>
+<p><strong>Mixed-effects model</strong></p>
+<div id="tbl-gt_table_me_un" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-gt_table_me_un-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Relative bioavailability assessment of T vs R, using a mixed-effects model and an unbalanced dataset.
+</figcaption>
+<div aria-describedby="tbl-gt_table_me_un-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<div id="jiphmxybby" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jiphmxybby table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#jiphmxybby thead, #jiphmxybby tbody, #jiphmxybby tfoot, #jiphmxybby tr, #jiphmxybby td, #jiphmxybby th {
+  border-style: none;
+}
+
+#jiphmxybby p {
+  margin: 0;
+  padding: 0;
+}
+
+#jiphmxybby .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#jiphmxybby .gt_title {
+  color: #333333;
+  font-size: 16px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#jiphmxybby .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#jiphmxybby .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#jiphmxybby .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#jiphmxybby .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#jiphmxybby .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#jiphmxybby .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#jiphmxybby .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#jiphmxybby .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#jiphmxybby .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#jiphmxybby .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#jiphmxybby .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#jiphmxybby .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#jiphmxybby .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jiphmxybby .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#jiphmxybby .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#jiphmxybby .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#jiphmxybby .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jiphmxybby .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#jiphmxybby .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jiphmxybby .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#jiphmxybby .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jiphmxybby .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#jiphmxybby .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jiphmxybby .gt_left {
+  text-align: left;
+}
+
+#jiphmxybby .gt_center {
+  text-align: center;
+}
+
+#jiphmxybby .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#jiphmxybby .gt_font_normal {
+  font-weight: normal;
+}
+
+#jiphmxybby .gt_font_bold {
+  font-weight: bold;
+}
+
+#jiphmxybby .gt_font_italic {
+  font-style: italic;
+}
+
+#jiphmxybby .gt_super {
+  font-size: 65%;
+}
+
+#jiphmxybby .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#jiphmxybby .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#jiphmxybby .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#jiphmxybby .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#jiphmxybby .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#jiphmxybby .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#jiphmxybby .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#jiphmxybby .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#jiphmxybby div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="gt_heading header">
+<th colspan="9" class="gt_heading gt_title gt_font_normal gt_bottom_border">Adjusted geometric means and relative bioavailability of treatment (T) vs reference (R) with subject as random effect - unbalanced dataset</th>
+</tr>
+<tr class="gt_col_headings gt_spanner_row even">
+<th data-quarto-table-cell-role="th" scope="col"></th>
+<th colspan="3" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"></th>
+<th colspan="5" id="Comparison vs reference (R)" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Comparison vs reference (R)
+</div></th>
+</tr>
+<tr class="gt_col_headings gt_spanner_row header">
+<th rowspan="2" id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th rowspan="2" id="n" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">n<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th colspan="2" id="Adjusted" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Adjusted
+</div></th>
+<th rowspan="2" id="ratio" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Ratio (T/R, %)</th>
+<th rowspan="2" id="gse" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gSE</th>
+<th colspan="2" id="ci_spanner" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+90% Confidence Interval
+</div></th>
+<th rowspan="2" id="gCV" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gCV (%)<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span></th>
+</tr>
+<tr class="gt_col_headings even">
+<th id="adj_gmean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gMean</th>
+<th id="adj_gse" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">gSE</th>
+<th id="lower" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Lower (%)</th>
+<th id="upper" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Upper (%)</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="gt_group_heading_row odd">
+<td colspan="9" id="Primary endpoints" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup">Primary endpoints</td>
+</tr>
+<tr class="gt_row_group_first even">
+<td id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">AUC0_tz</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 n"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 adj_gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_1 gCV"></td>
+</tr>
+<tr class="odd">
+<td id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 n">15</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 adj_gmean">497.87</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 adj_gse">1.09</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 ratio">90.02</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 gse">1.04</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 lower">84.50</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 upper">95.89</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_2 gCV">9.4</td>
+</tr>
+<tr class="even">
+<td id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 n">15</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 adj_gmean">448.17</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 adj_gse">1.09</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_3 gCV"></td>
+</tr>
+<tr class="odd">
+<td id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Cmax</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 n"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 adj_gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_4 gCV"></td>
+</tr>
+<tr class="even">
+<td id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 n">15</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 adj_gmean">176.09</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 adj_gse">1.05</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 ratio">96.05</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 gse">1.07</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 lower">85.65</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 upper">107.71</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_5 gCV">17.6</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 n">15</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 adj_gmean">169.13</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 adj_gse">1.05</td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 ratio"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 gse"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 lower"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 upper"></td>
+<td class="gt_row gt_right" headers="Primary endpoints stub_1_6 gCV"></td>
+</tr>
+<tr class="gt_group_heading_row even">
+<td colspan="9" id="Secondary endpoint" class="gt_group_heading" data-quarto-table-cell-role="th" scope="colgroup">Secondary endpoint</td>
+</tr>
+<tr class="gt_row_group_first odd">
+<td id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">AUCINF_pred</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 n"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 adj_gmean"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 adj_gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 ratio"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 lower"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 upper"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_7 gCV"></td>
+</tr>
+<tr class="even">
+<td id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">R</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 n">15</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 adj_gmean">496.58</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 adj_gse">1.07</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 ratio">89.07</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 gse">1.06</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 lower">80.89</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 upper">98.06</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_8 gCV">14.5</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_9" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">T</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 n">15</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 adj_gmean">442.28</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 adj_gse">1.07</td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 ratio"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 gse"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 lower"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 upper"></td>
+<td class="gt_row gt_right" headers="Secondary endpoint stub_1_9 gCV"></td>
+</tr>
+</tbody><tfoot>
+<tr class="gt_footnotes odd">
+<td colspan="9" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> n = number of observations included in the analysis of each treatment</td>
+</tr>
+<tr class="gt_footnotes even">
+<td colspan="9" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span> intra-individual gCV</td>
+</tr>
+<tr class="gt_sourcenotes odd">
+<td colspan="9" class="gt_sourcenote">February 05, 2026</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</figure>
+</div>
+<div id="fig-forest_me_un" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-forest_me_un-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="crossover_case_study_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-forest_me_un-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: gMean ratio with 90% CI of T vs R, using a mixed-effects model and an unbalanced dataset.
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="appendix-c---comparison-with-other-sas-outputs" class="level1 unnumbered">
+<h1 class="unnumbered">Appendix C - Comparison with other SAS outputs</h1>
+<section id="balanced-dataset-1" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="balanced-dataset-1">Balanced dataset</h2>
+<p>For both fixed- and mixed-effects models applied to the balanced dataset (<a href="#fig-sas-r-1" class="quarto-xref">Figure&nbsp;6</a> and <a href="#fig-sas-r-2" class="quarto-xref">Figure&nbsp;7</a>), results from R and SAS are numerically identical. Geometric means, treatment ratios, confidence intervals, and coefficient of variation coincide exactly across platforms.</p>
+<p>These results confirm that the R implementation reproduces SAS outputs under ideal balanced conditions.</p>
+<p><strong>Fixed-effects model</strong></p>
+<div id="fig-sas-r-1" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sas-r-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-sas-r-1" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-sas1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-sas1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/SAS/tables/table_fe_sas.png" id="fig-sas1" class="img-fluid figure-img" data-ref-parent="fig-sas-r-1">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-sas1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-sas-r-1" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-r1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-r1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/R/tables/table_fe_r.png" id="fig-r1" class="img-fluid figure-img" data-ref-parent="fig-sas-r-1">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-r1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sas-r-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Relative bioavailability assessment of T vs R, using a fixed-effects model and a balanced dataset: SAS (a) and R (b).
+</figcaption>
+</figure>
+</div>
+<p><strong>Mixed-effects model</strong></p>
+<div id="fig-sas-r-2" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sas-r-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-sas-r-2" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-sas2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-sas2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/SAS/tables/table_me_sas.png" id="fig-sas2" class="img-fluid figure-img" data-ref-parent="fig-sas-r-2">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-sas2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-sas-r-2" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-r2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-r2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/R/tables/table_me_r.png" id="fig-r2" class="img-fluid figure-img" data-ref-parent="fig-sas-r-2">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-r2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sas-r-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Relative bioavailability assessment of T vs R, using a mixed-effects model and a balanced dataset: SAS (a) and R (b).
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="unbalanced-dataset-1" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="unbalanced-dataset-1">Unbalanced dataset</h2>
+<p>As shown in <a href="#fig-sas-r-3" class="quarto-xref">Figure&nbsp;8</a>, fixed-effects analyses of the unbalanced dataset produced identical results in R and SAS. Despite the presence of missing second-period observations for two subjects, treatment estimates and confidence intervals remain fully aligned across software platforms when subjects are modeled as fixed effects.</p>
+<p>This further supports that discrepancies across platforms arise specifically from the combination of mixed-effects modeling, unbalanced data, and Kenward–Roger degree-of-freedom adjustments, rather than from data handling or back-transformation procedures.</p>
+<p><strong>Fixed-effects model</strong></p>
+<div id="fig-sas-r-3" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sas-r-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-sas-r-3" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-sas3" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-sas3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/SAS/tables/table_fe_un_sas.png" id="fig-sas3" class="img-fluid figure-img" data-ref-parent="fig-sas-r-3">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-sas3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-sas-r-3" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-r3" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-r3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/R/tables/table_fe_un_r.png" id="fig-r3" class="img-fluid figure-img" data-ref-parent="fig-sas-r-3">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-r3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sas-r-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Relative bioavailability assessment of T vs R, using a fixed-effects model and an unbalanced dataset: SAS (a) and R (b).
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Throughout this report, “log-transformation” refers to the natural logarithm.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>While both relative bioavailability and bioequivalence compare two formulations, the latter is a regulatory concept requiring formal hypothesis testing to demonstrate therapeutic equivalence using predefined margins (typically 80–125%) and procedures such as the two one-sided tests (TOST) <span class="citation" data-cites="FDA2001">[<a href="#ref-FDA2001" role="doc-biblioref">3</a>]</span>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>It was important to ensure that the simulated dataset would support both fixed-effects and mixed-effects modeling approaches. Since mixed-effects models require subject-level variability to estimate random effects reliably, the dataset was explicitly constructed to include this structure.<br>
+Although this may not reflect ideal conditions for fixed effects modeling, using the same dataset for both models mirrors standard practice in real-world analyses. And since the emphasis of this work is to compare the implementation of statistical models in SAS and R (rather than to evaluate model performance or inferential accuracy), using a single dataset across both approaches ensures a fair and controlled comparison.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
